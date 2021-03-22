@@ -1,4 +1,4 @@
-name: 'Terraform'
+name: 'Validate and plan deploy'
 
 on:
   pull_request:
@@ -8,10 +8,14 @@ on:
 
 jobs:
   terraform:
-    name: 'Terraform'
+    name: 'Validate and plan deploy'
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       TF_IN_AUTOMATION: true
     steps:
       - name: Checkout
@@ -35,11 +39,6 @@ jobs:
           commenter_type: fmt
           commenter_input: ${{ format('{0}{1}', steps.fmt.outputs.stdout, steps.fmt.outputs.stderr) }}
           commenter_exitcode: ${{ steps.fmt.outputs.exitcode }}
-      
-      - name: Log in with Azure
-        uses: azure/login@v1
-        with:
-          creds: '${{ secrets.AZURE_CREDENTIALS }}'
 
       - name: Terraform Init
         id: init
